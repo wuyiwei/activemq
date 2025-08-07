@@ -420,6 +420,7 @@ public final class OpenTypeSupport {
             addItem("next", "next time", SimpleType.STRING);
             addItem("period", "period between jobs", SimpleType.LONG);
             addItem("repeat", "number of times to repeat", SimpleType.INTEGER);
+            addItem("payload", "job payload", SimpleType.STRING); // 新增payload字段
         }
 
         @Override
@@ -433,6 +434,20 @@ public final class OpenTypeSupport {
             rc.put("next", job.getNextExecutionTime());
             rc.put("period", job.getPeriod());
             rc.put("repeat", job.getRepeat());
+
+            // 还原payload为JMSText
+            String jmsText = null;
+            try {
+                org.apache.activemq.openwire.OpenWireFormat wireFormat = new org.apache.activemq.openwire.OpenWireFormat();
+                org.apache.activemq.command.Message msg =
+                    (org.apache.activemq.command.Message) wireFormat.unmarshal(new org.apache.activemq.util.ByteSequence(job.getPayload()));
+                if (msg instanceof javax.jms.TextMessage) {
+                    jmsText = ((javax.jms.TextMessage) msg).getText();
+                }
+            } catch (Exception e) {
+                // ignore or log
+            }
+            rc.put("payload", jmsText);
             return rc;
         }
     }
