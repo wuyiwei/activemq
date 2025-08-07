@@ -435,19 +435,18 @@ public final class OpenTypeSupport {
             rc.put("period", job.getPeriod());
             rc.put("repeat", job.getRepeat());
 
-            // 还原payload为JMSText
-            String jmsText = null;
+            String payload = null;
             try {
                 org.apache.activemq.openwire.OpenWireFormat wireFormat = new org.apache.activemq.openwire.OpenWireFormat();
                 org.apache.activemq.command.Message msg =
                     (org.apache.activemq.command.Message) wireFormat.unmarshal(new org.apache.activemq.util.ByteSequence(job.getPayload()));
                 if (msg instanceof javax.jms.TextMessage) {
-                    jmsText = ((javax.jms.TextMessage) msg).getText();
+                    payload = ((javax.jms.TextMessage) msg).getText();
                 }
             } catch (Exception e) {
                 // ignore or log
             }
-            rc.put("payload", jmsText);
+            rc.put("payload", payload);
             return rc;
         }
     }
