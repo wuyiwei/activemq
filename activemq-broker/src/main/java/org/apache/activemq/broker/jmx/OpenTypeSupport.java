@@ -132,7 +132,8 @@ public final class OpenTypeSupport {
             addItem(CompositeDataConstants.JMSXGROUP_SEQ, "Message Group Sequence Number", SimpleType.INTEGER);
             addItem(CompositeDataConstants.JMSXUSER_ID, "The user that sent the message", SimpleType.STRING);
             addItem(CompositeDataConstants.BROKER_PATH, "Brokers traversed", SimpleType.STRING);
-            addItem(CompositeDataConstants.ORIGINAL_DESTINATION, "Original Destination Before Senting To DLQ", SimpleType.STRING);
+            addItem(CompositeDataConstants.ORIGINAL_DESTINATION, "Original Destination Before Senting To DLQ",
+                    SimpleType.STRING);
             addItem(CompositeDataConstants.PROPERTIES, "User Properties Text", SimpleType.STRING);
 
             // now lets expose the type safe properties
@@ -157,14 +158,15 @@ public final class OpenTypeSupport {
 
         @Override
         public Map<String, Object> getFields(Object o) throws OpenDataException {
-            ActiveMQMessage m = (ActiveMQMessage)o;
+            ActiveMQMessage m = (ActiveMQMessage) o;
             Map<String, Object> rc = super.getFields(o);
             rc.put("JMSCorrelationID", m.getJMSCorrelationID());
             rc.put("JMSDestination", "" + m.getJMSDestination());
             rc.put("JMSMessageID", m.getJMSMessageID());
-            rc.put("JMSReplyTo",toString(m.getJMSReplyTo()));
+            rc.put("JMSReplyTo", toString(m.getJMSReplyTo()));
             rc.put("JMSType", m.getJMSType());
-            rc.put("JMSDeliveryMode", m.getJMSDeliveryMode() == DeliveryMode.PERSISTENT ? "PERSISTENT" : "NON-PERSISTENT");
+            rc.put("JMSDeliveryMode",
+                    m.getJMSDeliveryMode() == DeliveryMode.PERSISTENT ? "PERSISTENT" : "NON-PERSISTENT");
             rc.put("JMSExpiration", Long.valueOf(m.getJMSExpiration()));
             rc.put("JMSPriority", Integer.valueOf(m.getJMSPriority()));
             rc.put("JMSRedelivered", Boolean.valueOf(m.getJMSRedelivered()));
@@ -181,42 +183,50 @@ public final class OpenTypeSupport {
             }
 
             try {
-                rc.put(CompositeDataConstants.STRING_PROPERTIES, createTabularData(m, stringPropertyTabularType, String.class));
+                rc.put(CompositeDataConstants.STRING_PROPERTIES,
+                        createTabularData(m, stringPropertyTabularType, String.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.STRING_PROPERTIES, new TabularDataSupport(stringPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.BOOLEAN_PROPERTIES, createTabularData(m, booleanPropertyTabularType, Boolean.class));
+                rc.put(CompositeDataConstants.BOOLEAN_PROPERTIES,
+                        createTabularData(m, booleanPropertyTabularType, Boolean.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.BOOLEAN_PROPERTIES, new TabularDataSupport(booleanPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.BYTE_PROPERTIES, createTabularData(m, bytePropertyTabularType, Byte.class));
+                rc.put(CompositeDataConstants.BYTE_PROPERTIES,
+                        createTabularData(m, bytePropertyTabularType, Byte.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.BYTE_PROPERTIES, new TabularDataSupport(bytePropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.SHORT_PROPERTIES, createTabularData(m, shortPropertyTabularType, Short.class));
+                rc.put(CompositeDataConstants.SHORT_PROPERTIES,
+                        createTabularData(m, shortPropertyTabularType, Short.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.SHORT_PROPERTIES, new TabularDataSupport(shortPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.INT_PROPERTIES, createTabularData(m, intPropertyTabularType, Integer.class));
+                rc.put(CompositeDataConstants.INT_PROPERTIES,
+                        createTabularData(m, intPropertyTabularType, Integer.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.INT_PROPERTIES, new TabularDataSupport(intPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.LONG_PROPERTIES, createTabularData(m, longPropertyTabularType, Long.class));
+                rc.put(CompositeDataConstants.LONG_PROPERTIES,
+                        createTabularData(m, longPropertyTabularType, Long.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.LONG_PROPERTIES, new TabularDataSupport(longPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.FLOAT_PROPERTIES, createTabularData(m, floatPropertyTabularType, Float.class));
+                rc.put(CompositeDataConstants.FLOAT_PROPERTIES,
+                        createTabularData(m, floatPropertyTabularType, Float.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.FLOAT_PROPERTIES, new TabularDataSupport(floatPropertyTabularType));
             }
             try {
-                rc.put(CompositeDataConstants.DOUBLE_PROPERTIES, createTabularData(m, doublePropertyTabularType, Double.class));
+                rc.put(CompositeDataConstants.DOUBLE_PROPERTIES,
+                        createTabularData(m, doublePropertyTabularType, Double.class));
             } catch (IOException e) {
                 rc.put(CompositeDataConstants.DOUBLE_PROPERTIES, new TabularDataSupport(doublePropertyTabularType));
             }
@@ -230,18 +240,18 @@ public final class OpenTypeSupport {
             return value.toString();
         }
 
-
         protected <T> TabularType createTabularType(Class<T> type, OpenType openType) throws OpenDataException {
             String typeName = "java.util.Map<java.lang.String, " + type.getName() + ">";
-            String[] keyValue = new String[]{"key", "value"};
-            OpenType[] openTypes = new OpenType[]{SimpleType.STRING, openType};
+            String[] keyValue = new String[] { "key", "value" };
+            OpenType[] openTypes = new OpenType[] { SimpleType.STRING, openType };
             CompositeType rowType = new CompositeType(typeName, typeName, keyValue, keyValue, openTypes);
-            return new TabularType(typeName, typeName, rowType, new String[]{"key"});
+            return new TabularType(typeName, typeName, rowType, new String[] { "key" });
         }
 
-        protected TabularDataSupport createTabularData(ActiveMQMessage m, TabularType type, Class valueType) throws IOException, OpenDataException {
+        protected TabularDataSupport createTabularData(ActiveMQMessage m, TabularType type, Class valueType)
+                throws IOException, OpenDataException {
             TabularDataSupport answer = new TabularDataSupport(type);
-            Set<Map.Entry<String,Object>> entries = m.getProperties().entrySet();
+            Set<Map.Entry<String, Object>> entries = m.getProperties().entrySet();
             for (Map.Entry<String, Object> entry : entries) {
                 Object value = entry.getValue();
                 if (value instanceof UTF8Buffer && valueType.equals(String.class)) {
@@ -257,8 +267,9 @@ public final class OpenTypeSupport {
             return answer;
         }
 
-        protected CompositeDataSupport createTabularRowValue(TabularType type, String key, Object value) throws OpenDataException {
-            Map<String,Object> fields = new HashMap<String, Object>();
+        protected CompositeDataSupport createTabularRowValue(TabularType type, String key, Object value)
+                throws OpenDataException {
+            Map<String, Object> fields = new HashMap<String, Object>();
             fields.put("key", key);
             fields.put("value", value);
             return new CompositeDataSupport(type.getRowType(), fields);
@@ -266,7 +277,6 @@ public final class OpenTypeSupport {
     }
 
     static class ByteMessageOpenTypeFactory extends MessageOpenTypeFactory {
-
 
         @Override
         protected String getTypeName() {
@@ -282,7 +292,7 @@ public final class OpenTypeSupport {
 
         @Override
         public Map<String, Object> getFields(Object o) throws OpenDataException {
-            ActiveMQBytesMessage m = (ActiveMQBytesMessage)o;
+            ActiveMQBytesMessage m = (ActiveMQBytesMessage) o;
             m.setReadOnlyBody(true);
             Map<String, Object> rc = super.getFields(o);
             long length = 0;
@@ -293,7 +303,7 @@ public final class OpenTypeSupport {
                 rc.put(CompositeDataConstants.BODY_LENGTH, Long.valueOf(0));
             }
             try {
-                byte preview[] = new byte[(int)Math.min(length, 255)];
+                byte preview[] = new byte[(int) Math.min(length, 255)];
                 m.readBytes(preview);
                 m.reset();
 
@@ -329,7 +339,7 @@ public final class OpenTypeSupport {
 
         @Override
         public Map<String, Object> getFields(Object o) throws OpenDataException {
-            ActiveMQMapMessage m = (ActiveMQMapMessage)o;
+            ActiveMQMapMessage m = (ActiveMQMapMessage) o;
             Map<String, Object> rc = super.getFields(o);
             try {
                 rc.put(CompositeDataConstants.CONTENT_MAP, "" + m.getContentMap());
@@ -391,7 +401,7 @@ public final class OpenTypeSupport {
 
         @Override
         public Map<String, Object> getFields(Object o) throws OpenDataException {
-            ActiveMQTextMessage m = (ActiveMQTextMessage)o;
+            ActiveMQTextMessage m = (ActiveMQTextMessage) o;
             Map<String, Object> rc = super.getFields(o);
             try {
                 rc.put(CompositeDataConstants.MESSAGE_TEXT, "" + m.getText());
@@ -402,8 +412,9 @@ public final class OpenTypeSupport {
         }
     }
 
-
     static class JobOpenTypeFactory extends AbstractOpenTypeFactory {
+        // 复用MessageOpenTypeFactory处理消息属性的能力
+        private final MessageOpenTypeFactory messageFactory = new MessageOpenTypeFactory();
 
         @Override
         protected String getTypeName() {
@@ -420,7 +431,9 @@ public final class OpenTypeSupport {
             addItem("next", "next time", SimpleType.STRING);
             addItem("period", "period between jobs", SimpleType.LONG);
             addItem("repeat", "number of times to repeat", SimpleType.INTEGER);
-            addItem("payload", "job payload", SimpleType.STRING); // 新增payload字段
+            addItem("payload", "Complete message payload details", SimpleType.STRING);
+            // 初始化messageFactory的CompositeType（会触发其init()方法，初始化所有TabularType）
+            messageFactory.getCompositeType();
         }
 
         @Override
@@ -435,18 +448,45 @@ public final class OpenTypeSupport {
             rc.put("period", job.getPeriod());
             rc.put("repeat", job.getRepeat());
 
-            String payload = null;
-            try {
-                org.apache.activemq.openwire.OpenWireFormat wireFormat = new org.apache.activemq.openwire.OpenWireFormat();
-                org.apache.activemq.command.Message msg =
-                    (org.apache.activemq.command.Message) wireFormat.unmarshal(new org.apache.activemq.util.ByteSequence(job.getPayload()));
-                if (msg instanceof javax.jms.TextMessage) {
-                    payload = ((javax.jms.TextMessage) msg).getText();
-                }
-            } catch (Exception e) {
-                // ignore or log
+            byte[] payloadBytes = job.getPayload();
+            if (payloadBytes == null) {
+                rc.put("payload", "No payload");
+                return rc;
             }
-            rc.put("payload", payload);
+
+            try {
+                // 反序列化消息，使用完整包路径的ByteSequence
+                org.apache.activemq.openwire.OpenWireFormat wireFormat = new org.apache.activemq.openwire.OpenWireFormat();
+                org.apache.activemq.util.ByteSequence packet = new org.apache.activemq.util.ByteSequence(payloadBytes);
+                org.apache.activemq.command.Message msg = (org.apache.activemq.command.Message) wireFormat
+                        .unmarshal(packet);
+
+                // 构建payload详情（复用MessageOpenTypeFactory的字段提取逻辑）
+                Map<String, Object> payloadDetails = new HashMap<>();
+
+                // 1. 提取基础消息字段（如JMS属性、目的地等）
+                payloadDetails.putAll(messageFactory.getFields(msg));
+
+                // 2. 提取消息体内容（根据消息类型适配）
+                if (msg instanceof org.apache.activemq.command.ActiveMQTextMessage) {
+                    payloadDetails.put("textContent",
+                            ((org.apache.activemq.command.ActiveMQTextMessage) msg).getText());
+                } else if (msg instanceof org.apache.activemq.command.ActiveMQBytesMessage) {
+                    payloadDetails.put("bodyLength",
+                            ((org.apache.activemq.command.ActiveMQBytesMessage) msg).getBodyLength());
+                } else if (msg instanceof org.apache.activemq.command.ActiveMQMapMessage) {
+                    payloadDetails.put("mapContent",
+                            ((org.apache.activemq.command.ActiveMQMapMessage) msg).getContentMap());
+                }
+
+                // 3. 序列化为JSON字符串
+                rc.put("payload", new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(payloadDetails));
+            } catch (Exception e) {
+                // 异常时保留原始字节信息和错误详情
+                rc.put("payload", "Error parsing payload: " + e.getMessage() + " (raw bytes: "
+                        + Arrays.toString(payloadBytes) + ")");
+            }
+
             return rc;
         }
     }
@@ -466,7 +506,7 @@ public final class OpenTypeSupport {
 
         @Override
         public Map<String, Object> getFields(Object o) throws OpenDataException {
-            ActiveMQBlobMessage m = (ActiveMQBlobMessage)o;
+            ActiveMQBlobMessage m = (ActiveMQBlobMessage) o;
             Map<String, Object> rc = super.getFields(o);
             try {
                 rc.put(CompositeDataConstants.MESSAGE_URL, "" + m.getURL().toString());
@@ -478,7 +518,7 @@ public final class OpenTypeSupport {
     }
 
     static class SlowConsumerEntryOpenTypeFactory extends AbstractOpenTypeFactory {
-       @Override
+        @Override
         protected String getTypeName() {
             return SlowConsumerEntry.class.getName();
         }
